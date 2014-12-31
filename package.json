@@ -13,6 +13,7 @@
   "author": "Axel Isouard",
   "license": "GPL3",
   "dependencies": {
-    "express": "^4.10.6"
+    "express": "^4.10.6",
+    "raven": "^0.7.2"
   }
 }

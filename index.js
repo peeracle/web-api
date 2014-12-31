@@ -1,3 +1,7 @@
+var raven = require('raven');
+var ravenClient = new raven.Client('http://dfcf5661afda4552bb80816576fd3239:4282bc54c4944fd680f37b4a8ea1d5d3@sentry.dotstar.fr/3');
+ravenClient.patchGlobal();
+
 var express = require('express')
 var app = express()
 
