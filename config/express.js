@@ -5,7 +5,7 @@ var config = require('./config');
 var cookieParser = require('cookie-parser');
 var cookieSession = require('cookie-session');
 var session = require('express-session');
-var mongoStore = require('connect-mongo')(session);
+var RedisStore = require('connect-redis')(session);
 var morgan = require('morgan');
 var winston = require('winston');
 
@@ -37,9 +37,9 @@ module.exports = function (app) {
     resave: true,
     saveUninitialized: true,
     secret: 'peeracle-api',
-    store: new mongoStore({
-      url: config.db,
-      collection: 'sessions'
+    store: new RedisStore({
+      host: config.redis.host,
+      port: config.redis.port
     })
   }));
 };

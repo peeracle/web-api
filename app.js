@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var express = require('express');
 var mongoose = require('mongoose');
 var config = require('./config/config');
@@ -23,9 +24,9 @@ mongoose.connection.on('disconnected', connect);
 
 //
 // Bootstrap models
-fs.readdirSync(__dirname + '/models').forEach(function (file) {
+fs.readdirSync(path.join(__dirname, '/models')).forEach(function (file) {
   if (~file.indexOf('.js')) {
-    require(__dirname + '/models/' + file);
+    require(path.join(__dirname, '/models/' + file));
   }
 });
 
