@@ -1,8 +1,11 @@
 'use strict';
 
-var mongoose = require('mongoose');
-
-var Schema = mongoose.Schema;
+var bookshelf = require('../config/config').bookshelf;
+var User = bookshelf.Model.extend({
+    tableName: 'users'
+});
+/*
+var Schema = bookshelf.Schema;
 
 var UserSchema = new Schema({
   name: {type: String, default: ''}
@@ -25,3 +28,4 @@ UserSchema.statics = {
 };
 
 mongoose.model('User', UserSchema);
+*/

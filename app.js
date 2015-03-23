@@ -3,7 +3,18 @@
 var fs = require('fs');
 var path = require('path');
 var express = require('express');
-var mongoose = require('mongoose');
+var knex = require('knex')({
+    client: 'mysql',
+    connection: {
+        host     : '127.0.0.1',
+        user     : 'your_database_user',
+        password : 'your_database_password',
+        database : 'myapp_test',
+        charset  : 'utf8'
+    }
+});
+
+var bookshelf = require('bookshelf')(knex);
 var config = require('./config/config');
 
 var app = express();
@@ -14,13 +25,13 @@ require('./config/routes')(app);
 //
 // MongoDB
 var connect = function () {
-  var options = {server: {socketOptions: {keepAlive: 1}}};
-  mongoose.connect(config.db, options);
+  //var options = {server: {socketOptions: {keepAlive: 1}}};
+  //mongoose.connect(config.db, options);
 };
 connect();
 
-mongoose.connection.on('error', console.log);
-mongoose.connection.on('disconnected', connect);
+//mongoose.connection.on('error', console.log);
+//mongoose.connection.on('disconnected', connect);
 
 //
 // Bootstrap models
