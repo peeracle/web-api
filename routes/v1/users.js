@@ -9,12 +9,20 @@ var tab_user = [];
 var tab_token = [];
 var i = 0;
 
-function readArray (arr) {
+function readArrayUser (arr) {
     for (var j = 0; j !== arr.length; j++) {
         console.log('----------[' + j + ']----------');
         console.log(arr[j].body.username);
         console.log(arr[j].body.password);
         console.log(arr[j].body.email);
+        console.log('-----------------------');
+    }
+}
+
+function readArrayToken (arr) {
+    for (var j = 0; j !== arr.length; j++) {
+        console.log('----------[' + j + ']----------');
+        console.log(arr[j]);
         console.log('-----------------------');
     }
 }
@@ -58,11 +66,12 @@ function stockUser(req, res) {
     console.log('Stock user ...');
     if (checkRules(req) === true) {
         tab_user[i++] = req;
-        readArray(tab_user);
-        randomString(15, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+        readArrayUser(tab_user);
+        tab_token.push(randomString(15, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'));
+        readArrayToken(tab_token);
+        console.log('send http://api.peeracle.local:8080/v1/users/signup/confirm?token=' + tab_token[tab_token.length - 1]);
         res.send('202'); // accepted
-    }
-    else {
+    } else {
         res.send('409'); // conflict
     }
 
@@ -83,24 +92,9 @@ function checkUserExist(req, res) {
     res.send('OK');
 }
 
-function getQueryVariable(req, variable) {
-    var query = req.url;
-    console.log('bonjour=' + req.url);
-    var vars = query.split('&');
-
-    console.log('aurevoir=' + vars);
-    for (var j = 0; j < vars.length; j++) {
-        var pair = vars[j].split('=');
-        if (decodeURIComponent(pair[0]) === variable) {
-            return decodeURIComponent(pair[1]);
-        }
-    }
-    console.log('Query variable %s not found', variable);
-}
-
 function parse(querystring) {
     // remove any preceding url and split
-    querystring = querystring.substring(querystring.indexOf('?')+1).split('&');
+    querystring = querystring.substring(querystring.indexOf('?') + 1).split('&');
     var params = {}, pair, d = decodeURIComponent;
     // march and parse
     for (var j = querystring.length - 1; j >= 0; j--) {
@@ -113,8 +107,18 @@ function parse(querystring) {
 
 function checkToken(req, res) {
     var rslt = parse(req.url);
-    console.log(rslt.token);
-    res.send('hello');
+    //console.log('le resultat est ' + rslt.token);
+    for (var j = 0; j !== tab_token.length; j++) {
+        if (rslt.token === tab_token[j]) {
+            console.log('match');
+            tab_token.splice(j, 1);
+            readArrayToken(tab_token);
+            res.send('201');
+            return;
+        }
+    }
+    console.log('token doesnt exist');
+    res.send('404');
 }
 
 router.post('/signup', stockUser);
