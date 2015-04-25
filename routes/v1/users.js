@@ -6,7 +6,6 @@ var User = require('../../models/user');
 var orm = require('orm');
 
 var tab_user = [];
-var tab_token = [];
 var i = 0;
 
 function readArrayUser (arr) {
@@ -15,14 +14,7 @@ function readArrayUser (arr) {
         console.log(arr[j].body.username);
         console.log(arr[j].body.password);
         console.log(arr[j].body.email);
-        console.log('-----------------------');
-    }
-}
-
-function readArrayToken (arr) {
-    for (var j = 0; j !== arr.length; j++) {
-        console.log('----------[' + j + ']----------');
-        console.log(arr[j]);
+        console.log(arr[j].body.token);
         console.log('-----------------------');
     }
 }
@@ -58,18 +50,12 @@ function randomString(length, chars) {
 }
 
 function stockUser(req, res) {
-
-    // clear le tableau
-     /*tab_user.length = 0;
-     i = 0;
-     */
     console.log('Stock user ...');
     if (checkRules(req) === true) {
+        req.body.token = randomString(15, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
         tab_user[i++] = req;
         readArrayUser(tab_user);
-        tab_token.push(randomString(15, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'));
-        readArrayToken(tab_token);
-        console.log('send http://api.peeracle.local:8080/v1/users/signup/confirm?token=' + tab_token[tab_token.length - 1]);
+        console.log('send http://api.peeracle.local:8080/v1/users/signup/confirm?token=' + tab_user[tab_user.length - 1].body.token);
         res.send('202'); // accepted
     } else {
         res.send('409'); // conflict
@@ -83,7 +69,7 @@ function stockUser(req, res) {
 function checkUserExist(req, res) {
     var exist = false;
     for (var j = 0; j !== tab_user.length; j++) {
-        if (req.body.username === tab_user[j].body.username) {
+        if (tab_user[j].body.token === 1 && req.body.username === tab_user[j].body.username) {
             exist = true;
             break;
         }
@@ -107,12 +93,11 @@ function parse(querystring) {
 
 function checkToken(req, res) {
     var rslt = parse(req.url);
-    //console.log('le resultat est ' + rslt.token);
-    for (var j = 0; j !== tab_token.length; j++) {
-        if (rslt.token === tab_token[j]) {
+    for (var j = 0; j !== tab_user.length; j++) {
+        if (rslt.token === tab_user[j].body.token) {
             console.log('match');
-            tab_token.splice(j, 1);
-            readArrayToken(tab_token);
+            tab_user[j].body.token = 1;
+            readArrayUser(tab_user);
             res.send('201');
             return;
         }
