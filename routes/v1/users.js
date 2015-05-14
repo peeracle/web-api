@@ -7,20 +7,21 @@ var orm = require('orm');
 
 var tab_user = [];
 var i = 0;
+var mais;
 
 orm.connect('mysql://api_dev:LA4PnhPQR7O4vLT@db.peeracle.local/api_dev', function (err, db) {
     if (err) {
         throw (err);
     }
     // db is now available to use! ^__^
-    var tableUser = db.define('tableUser', {name: String});
+    var tableUser = db.define('tableUser', {username: String, password: String, email: String, token: String});
     tableUser.sync(function (err2) {
         if (err2) {
             throw (err2);
         }
         console.log('table synced');
     });
-
+    mais = tableUser;
 });
 
 /*
@@ -86,6 +87,17 @@ function stockUser(req, res) {
     if (checkRules(req) === true) {
         req.body.token = randomString(15, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
         tab_user[i++] = req;
+        var lol = {};
+        lol.username = req.body.username;
+        lol.email = req.body.email;
+        lol.password = req.body.password;
+        lol.token = req.body.token;
+        mais.create(lol, function(err, results) {
+            if (err) {
+                throw (err);
+            }
+            console.log('ok real db');
+        });
         readArrayUser(tab_user);
         console.log('send http://api.peeracle.local:8080/v1/users/signup/confirm?token=' + tab_user[tab_user.length - 1].body.token);
         res.send('202'); // accepted
@@ -125,6 +137,14 @@ function parse(querystring) {
 
 function checkToken(req, res) {
     var rslt = parse(req.url);
+
+    mais.find({token: rslt.token}, function (err, user) {
+            if (err) {
+                throw (err);
+            }
+            console.log('exist dans la db : ' + user[0].username);
+        }
+    );
     for (var j = 0; j !== tab_user.length; j++) {
         if (rslt.token === tab_user[j].body.token) {
             console.log('match');
