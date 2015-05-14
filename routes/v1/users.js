@@ -8,6 +8,38 @@ var orm = require('orm');
 var tab_user = [];
 var i = 0;
 
+orm.connect('mysql://api_dev:LA4PnhPQR7O4vLT@db.peeracle.local/api_dev', function (err, db) {
+    if (err) {
+        throw (err);
+    }
+    // db is now available to use! ^__^
+    var tableUser = db.define('tableUser', {name: String});
+    tableUser.sync(function (err2) {
+        if (err2) {
+            throw (err2);
+        }
+        console.log('table synced');
+    });
+
+});
+
+/*
+orm.connect('postgres://api_dev:LA4PnhPQR7O4vLT@db.peeracle.local/api_dev', function (err, db) {
+    if (err) {
+        throw (err);
+    }
+    console.log('connected');
+    // db is now available to use! ^__^
+    var tableUser = db.define('tableUser', {name: String});
+    tableUser.sync(function (err) {
+        if (err) {
+            throw (err);
+        }
+        console.log('table synced');
+    });
+});
+*/
+
 function readArrayUser (arr) {
     for (var j = 0; j !== arr.length; j++) {
         console.log('----------[' + j + ']----------');
@@ -75,7 +107,7 @@ function checkUserExist(req, res) {
         }
     }
     console.log(exist);
-    res.send('OK');
+    res.send('202');
 }
 
 function parse(querystring) {
