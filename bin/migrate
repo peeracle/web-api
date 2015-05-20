@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+'use strict';
+
+var bookshelf = require('../config/config').bookshelf;
+
+// this is our schema example:
+
+// this executes the schema operation:
+
